@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace com.outrealxr.networkimages.Runtime
+namespace com.outrealxr.networkimages
 {
     public class NetworkImageQueue : MonoBehaviour
     {

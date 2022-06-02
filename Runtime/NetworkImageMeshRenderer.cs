@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.outrealxr.networkimages.Runtime
+namespace com.outrealxr.networkimages
 {
     public class NetworkImageMeshRenderer : NetworkImage
     {

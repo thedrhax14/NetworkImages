@@ -8,6 +8,8 @@ namespace com.outrealxr.networkimages
         {
             Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
             target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
+            target.sharedMaterials[materialIndex].mainTextureScale = tiling;
+            target.sharedMaterials[materialIndex].mainTextureOffset = offset;
         }
     }
 }

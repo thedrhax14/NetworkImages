@@ -36,6 +36,18 @@ namespace com.outrealxr.networkimages
                 current = queue.Dequeue();
                 StartCoroutine(GetTexture());
             }
+            else if(current != null)
+            {
+                Debug.LogWarning("[NetworkImageQueue] unable to dequeue: there is already an image downloading. Next attempt after that one.");
+            } 
+            else if(queue.Count == 0)
+            {
+                Debug.LogWarning("[NetworkImageQueue] Nothing to dequeue");
+            }
+            else
+            {
+                Debug.LogWarning("[NetworkImageQueue] Uknown reason");
+            }
         }
 
         IEnumerator GetTexture()
@@ -54,9 +66,9 @@ namespace com.outrealxr.networkimages
                 else
                 {
                     current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
-                    current = null;
-                    TryNext();
                 }
+                current = null;
+                TryNext();
             }
         }
     }

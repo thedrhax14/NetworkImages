@@ -61,7 +61,7 @@ namespace com.outrealxr.networkimages
 
                 if (uwr.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                    Debug.LogWarning($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
                 }
                 else
                 {

@@ -10,6 +10,10 @@ namespace com.outrealxr.networkimages
         public string materialPropertyName = "_BaseMap";
         public int materialIndex = 0;
 
+        private void Awake() {
+            if (!target) GetComponent<MeshRenderer>();
+        }
+
         public override void SetTexture(Texture texture)
         {
             Destroy(target.materials[materialIndex].GetTexture(materialPropertyName));

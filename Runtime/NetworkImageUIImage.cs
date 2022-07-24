@@ -27,9 +27,7 @@ namespace com.outrealxr.networkimages
                 Destroy(target.sprite.texture);
                 Destroy(target.sprite);
             }
-            Texture2D texture2D = new Texture2D(texture.width, texture.height, GetTextureFormat(), false);
-            Graphics.CopyTexture(texture, texture2D);
-            target.sprite = Sprite.Create(texture2D, new Rect(rect.x, rect.y, texture.width, texture.height), pivot, pixelsPerUnit);
+            target.sprite = Sprite.Create(texture as Texture2D, new Rect(rect.x, rect.y, texture.width, texture.height), pivot, pixelsPerUnit);
         }
 
         TextureFormat GetTextureFormat()

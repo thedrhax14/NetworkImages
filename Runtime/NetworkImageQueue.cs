@@ -52,6 +52,11 @@ namespace com.outrealxr.networkimages
 
         IEnumerator GetTexture()
         {
+            if(string.IsNullOrWhiteSpace(current.url))
+            {
+                TryNext();
+                yield break;
+            }
             if (current.url.Contains(".mp4")) current.url = current.url.Replace(".mp4", ".jpg");
             else if (current.url.Contains(".m3u8")) current.url = current.url.Replace(".m3u8", ".jpg");
             Debug.Log($"[NetworkImageQueue] Dequeued ${current}");

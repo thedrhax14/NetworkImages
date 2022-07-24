@@ -58,16 +58,18 @@ namespace com.outrealxr.networkimages
             using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
             {
                 yield return uwr.SendWebRequest();
-
-                if (uwr.result != UnityWebRequest.Result.Success)
+                if (current != null)
                 {
-                    Debug.LogWarning($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                    if (uwr.result != UnityWebRequest.Result.Success)
+                    {
+                        Debug.LogWarning($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                    }
+                    else
+                    {
+                        current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
+                    }
+                    current = null;
                 }
-                else
-                {
-                    current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
-                }
-                current = null;
                 TryNext();
             }
         }

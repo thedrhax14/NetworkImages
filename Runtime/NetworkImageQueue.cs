@@ -54,6 +54,7 @@ namespace com.outrealxr.networkimages
         {
             if(string.IsNullOrWhiteSpace(current.url))
             {
+                current = null;
                 TryNext();
                 yield break;
             }

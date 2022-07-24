@@ -4,6 +4,7 @@ namespace com.outrealxr.networkimages
 {
     public class NetworkImageMeshRenderer : NetworkImage
     {
+        [Header("MeshRenderer Settings")]
         public MeshRenderer target;
         public Vector2 tiling = Vector2.one;
         public Vector2 offset = Vector2.zero;
@@ -11,7 +12,7 @@ namespace com.outrealxr.networkimages
         public int materialIndex = 0;
 
         private void Awake() {
-            if (!target) GetComponent<MeshRenderer>();
+            if (!target) target = GetComponent<MeshRenderer>();
         }
 
         public override void SetTexture(Texture texture)

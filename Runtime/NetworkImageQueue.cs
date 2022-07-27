@@ -19,6 +19,11 @@ namespace com.outrealxr.networkimages
 
         public void Enqueue(NetworkImage networkImage)
         {
+            if(string.IsNullOrWhiteSpace(networkImage.url))
+            {
+                Debug.LogWarning($"[NetworkImageQueue] networkImage {networkImage.gameObject.name} skipped because url is empty");
+                return;
+            }
             if(queue.Contains(networkImage))
             {
                 Debug.LogWarning($"[NetworkImageQueue] Already queued ${networkImage}. Skipped");

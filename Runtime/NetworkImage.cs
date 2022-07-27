@@ -26,7 +26,7 @@ namespace com.outrealxr.networkimages
 
         public override bool Equals(object other)
         {
-            return other.GetType() == typeof(NetworkImage) && ((NetworkImage) other).gameObject.name.Equals(gameObject.name);
+            return other.GetType() == typeof(NetworkImage) && ((NetworkImage) other).gameObject.GetInstanceID().Equals(GetInstanceID());
         }
 
         public override string ToString()

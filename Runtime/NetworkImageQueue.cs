@@ -19,16 +19,6 @@ namespace com.outrealxr.networkimages
 
         public void Enqueue(NetworkImage networkImage)
         {
-            if(string.IsNullOrWhiteSpace(networkImage.url))
-            {
-                Debug.LogWarning($"[NetworkImageQueue] networkImage {networkImage.gameObject.name} skipped because url is empty");
-                return;
-            }
-            if(queue.Contains(networkImage))
-            {
-                Debug.LogWarning($"[NetworkImageQueue] Already queued ${networkImage}. Skipped");
-                return;
-            }
             Debug.Log($"[NetworkImageQueue] Queued ${networkImage}");
             queue.Enqueue(networkImage);
             TryNext();
@@ -57,8 +47,15 @@ namespace com.outrealxr.networkimages
 
         IEnumerator GetTexture()
         {
-            if(string.IsNullOrWhiteSpace(current.url))
+            if(current == null)
             {
+                Debug.LogWarning($"[NetworkImageQueue] Currently served image is not available any more.");
+                TryNext();
+                yield break;
+            }
+            if (string.IsNullOrWhiteSpace(current.url))
+            {
+                Debug.LogWarning($"[NetworkImageQueue] networkImage {current.gameObject.name} skipped because url is empty");
                 current = null;
                 TryNext();
                 yield break;

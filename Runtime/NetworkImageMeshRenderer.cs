@@ -22,5 +22,10 @@ namespace com.outrealxr.networkimages
             target.materials[materialIndex].mainTextureScale = tiling;
             target.materials[materialIndex].mainTextureOffset = offset;
         }
+
+        public virtual Material GetMaterial()
+        {
+            return target.materials[materialIndex];
+        }
     }
 }

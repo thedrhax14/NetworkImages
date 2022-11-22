@@ -11,5 +11,10 @@ namespace com.outrealxr.networkimages
             target.sharedMaterials[materialIndex].mainTextureScale = tiling;
             target.sharedMaterials[materialIndex].mainTextureOffset = offset;
         }
+
+        public override Material GetMaterial()
+        {
+            return target.sharedMaterials[materialIndex];
+        }
     }
 }

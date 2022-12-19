@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace com.outrealxr.networkimages
 {
@@ -60,25 +63,46 @@ namespace com.outrealxr.networkimages
                 TryNext();
                 yield break;
             }
-            if (current.url.Contains(".mp4")) current.url = current.url.Replace(".mp4", ".jpg");
-            else if (current.url.Contains(".m3u8")) current.url = current.url.Replace(".m3u8", ".jpg");
-            Debug.Log($"[NetworkImageQueue] Dequeued ${current}");
-            using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
+            if (current.url.StartsWith("http"))
             {
-                yield return uwr.SendWebRequest();
-                if (current != null)
+                if (current.url.Contains(".mp4")) current.url = current.url.Replace(".mp4", ".jpg");
+                else if (current.url.Contains(".m3u8")) current.url = current.url.Replace(".m3u8", ".jpg");
+                Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
+                using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
                 {
-                    if (uwr.result != UnityWebRequest.Result.Success)
+                    yield return uwr.SendWebRequest();
+                    if (current != null)
                     {
-                        Debug.LogWarning($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                        if (uwr.result != UnityWebRequest.Result.Success)
+                        {
+                            Debug.LogWarning($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                        }
+                        else
+                        {
+                            current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
+                        }
+                        current = null;
                     }
-                    else
-                    {
-                        current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
-                    }
-                    current = null;
+                    TryNext();
                 }
-                TryNext();
+            }
+            else
+            {
+                Debug.Log($"[NetworkImageQueue] Dequeued ${current} as addressable image");
+                AsyncOperationHandle<IList<IResourceLocation>> locationsHandle = Addressables.LoadResourceLocationsAsync(current.url);
+                yield return locationsHandle;
+                AsyncOperationHandle<Texture2D> handle;
+                if (locationsHandle.Result.Count > 0)
+                {
+                    handle = Addressables.LoadAssetAsync<Texture2D>(current.url);
+                    yield return handle;
+                    Debug.Log($"[AddressableAvatarOperation] Loaded {current.url}");
+                    current.SetTexture(handle.Result);
+                }
+                else
+                {
+                    Debug.Log($"[NetworkImageQueue] {current.url} is missing.");
+                }
             }
         }
     }

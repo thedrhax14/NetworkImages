@@ -10,12 +10,6 @@ namespace com.outrealxr.networkimages
         public Vector2 pivot = new Vector2(0.5f, 0.5f);
         public float pixelsPerUnit = 100f;
 
-        public TextureFormat WebGLTextureFormat = TextureFormat.DXT5Crunched;
-        [Tooltip("It is also default format")]
-        public TextureFormat WindowsTextureFormat = TextureFormat.RGBA32;
-        public TextureFormat iOSTextureFormat = TextureFormat.ASTC_6x6;
-        public TextureFormat AndroidTextureFormat = TextureFormat.ETC2_RGBA1;
-
         private void Awake()
         {
             if (!target) target = GetComponent<UnityEngine.UI.Image>();
@@ -28,24 +22,7 @@ namespace com.outrealxr.networkimages
                 Destroy(target.sprite);
             }
             target.sprite = Sprite.Create(texture as Texture2D, new Rect(rect.x, rect.y, texture.width, texture.height), pivot, pixelsPerUnit);
-        }
-
-        TextureFormat GetTextureFormat()
-        {
-            switch (Application.platform)
-            {
-                case RuntimePlatform.WindowsEditor:
-                    return WindowsTextureFormat;
-                case RuntimePlatform.WindowsPlayer:
-                    return WindowsTextureFormat;
-                case RuntimePlatform.IPhonePlayer:
-                    return iOSTextureFormat;
-                case RuntimePlatform.Android:
-                    return AndroidTextureFormat;
-                case RuntimePlatform.WebGLPlayer:
-                    return WebGLTextureFormat;
-            }
-            return WindowsTextureFormat;
+            base.SetTexture(texture);
         }
     }
 }

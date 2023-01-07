@@ -21,6 +21,7 @@ namespace com.outrealxr.networkimages
             target.materials[materialIndex].SetTexture(materialPropertyName, texture);
             target.materials[materialIndex].mainTextureScale = tiling;
             target.materials[materialIndex].mainTextureOffset = offset;
+            base.SetTexture(texture);
         }
 
         public virtual Material GetMaterial()

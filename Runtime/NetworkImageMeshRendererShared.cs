@@ -10,6 +10,7 @@ namespace com.outrealxr.networkimages
             target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
             target.sharedMaterials[materialIndex].mainTextureScale = tiling;
             target.sharedMaterials[materialIndex].mainTextureOffset = offset;
+            base.SetTexture(texture);
         }
 
         public override Material GetMaterial()

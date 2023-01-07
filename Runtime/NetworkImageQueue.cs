@@ -70,12 +70,14 @@ namespace com.outrealxr.networkimages
                 Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
                 using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
                 {
+                    current.SetViewState(NetworkImage.State.Loading);
                     yield return uwr.SendWebRequest();
                     if (current != null)
                     {
                         if (uwr.result != UnityWebRequest.Result.Success)
                         {
-                            Debug.LogWarning($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                            current.SetViewState(NetworkImage.State.Error);
+                            Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
                         }
                         else
                         {

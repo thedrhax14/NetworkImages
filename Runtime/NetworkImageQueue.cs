@@ -65,8 +65,6 @@ namespace com.outrealxr.networkimages
             }
             if (current.url.StartsWith("http"))
             {
-                if (current.url.Contains(".mp4")) current.url = current.url.Replace(".mp4", ".jpg");
-                else if (current.url.Contains(".m3u8")) current.url = current.url.Replace(".m3u8", ".jpg");
                 Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
                 using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
                 {

@@ -22,6 +22,11 @@ namespace com.outrealxr.networkimages
 
         public void Enqueue(NetworkImage networkImage)
         {
+            if (string.IsNullOrWhiteSpace(networkImage.url))
+            {
+                Debug.LogWarning($"[NetworkImageQueue] networkImage {networkImage.gameObject.name} skipped because url is empty");
+                return;
+            }
             Debug.Log($"[NetworkImageQueue] Queued ${networkImage}");
             queue.Enqueue(networkImage);
             TryNext();
@@ -48,6 +53,8 @@ namespace com.outrealxr.networkimages
             }
         }
 
+        float timeout = 0;
+
         IEnumerator GetTexture()
         {
             if(current == null)
@@ -63,25 +70,34 @@ namespace com.outrealxr.networkimages
                 TryNext();
                 yield break;
             }
+            timeout = Time.time + current.timeout;
             if (current.url.StartsWith("http"))
             {
                 Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
                 using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
                 {
                     current.SetViewState(NetworkImage.State.Loading);
-                    yield return uwr.SendWebRequest();
-                    if (current != null)
+                    uwr.SendWebRequest();
+                    yield return new WaitUntil(() => timeout < Time.time || uwr.isDone);
+                    if (uwr.isDone)
                     {
-                        if (uwr.result != UnityWebRequest.Result.Success)
+                        if (current != null)
                         {
-                            current.SetViewState(NetworkImage.State.Error);
-                            Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                            if (uwr.result != UnityWebRequest.Result.Success)
+                            {
+                                current.SetViewState(NetworkImage.State.Error);
+                                Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                            }
+                            else
+                            {
+                                current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
+                            }
+                            current = null;
                         }
-                        else
-                        {
-                            current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
-                        }
-                        current = null;
+                    }
+                    else if(timeout < Time.time)
+                    {
+                        Debug.LogError($"[NetworkImageQueue] Timed out after {current.timeout} while downloading {current}");
                     }
                     TryNext();
                 }

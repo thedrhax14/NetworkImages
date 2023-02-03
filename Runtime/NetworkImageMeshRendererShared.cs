@@ -6,11 +6,18 @@ namespace com.outrealxr.networkimages
     {
         public override void SetTexture(Texture texture)
         {
-            Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
-            target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
-            target.sharedMaterials[materialIndex].mainTextureScale = tiling;
-            target.sharedMaterials[materialIndex].mainTextureOffset = offset;
-            base.SetTexture(texture);
+            if (target)
+            {
+                Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
+                target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
+                target.sharedMaterials[materialIndex].mainTextureScale = tiling;
+                target.sharedMaterials[materialIndex].mainTextureOffset = offset;
+                base.SetTexture(texture);
+            }
+            else
+            {
+                Debug.LogError($"[NetworkImageMeshRendererShared] {gameObject.name} has no target assigned");
+            }
         }
 
         public override Material GetMaterial()

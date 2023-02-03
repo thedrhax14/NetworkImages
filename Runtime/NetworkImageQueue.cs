@@ -10,6 +10,7 @@ namespace com.outrealxr.networkimages
 {
     public class NetworkImageQueue : MonoBehaviour
     {
+        public TMPro.TextMeshProUGUI text;
         Queue<NetworkImage> queue = new Queue<NetworkImage>();
         NetworkImage current;
 
@@ -18,6 +19,12 @@ namespace com.outrealxr.networkimages
         private void Awake()
         {
             instance = this;
+        }
+
+        private void Update()
+        {
+            if (current != null && uwr != null) text.text = $"Loading (isDone: {uwr.isDone} - {timeout - Time.time:00.00}) {current}";
+            else text.gameObject.SetActive(false);
         }
 
         public void Enqueue(NetworkImage networkImage)
@@ -41,18 +48,21 @@ namespace com.outrealxr.networkimages
             }
             else if(current != null)
             {
-                Debug.LogWarning("[NetworkImageQueue] unable to dequeue: there is already an image downloading. Next attempt after that one.");
+                Debug.LogWarning($"[NetworkImageQueue] unable to dequeue: there is already an image {current} downloading. Next attempt after that one.");
             } 
             else if(queue.Count == 0)
             {
                 Debug.LogWarning("[NetworkImageQueue] Nothing to dequeue");
+                text.text = "";
             }
             else
             {
                 Debug.LogWarning("[NetworkImageQueue] Uknown reason");
+                text.text = "";
             }
         }
 
+        UnityWebRequest uwr;
         float timeout = 0;
 
         IEnumerator GetTexture()
@@ -71,14 +81,15 @@ namespace com.outrealxr.networkimages
                 yield break;
             }
             timeout = Time.time + current.timeout;
+            text.gameObject.SetActive(true);
             if (current.url.StartsWith("http"))
             {
                 Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
-                using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(current.url))
+                using (uwr = UnityWebRequestTexture.GetTexture(current.url))
                 {
+                    uwr.timeout = current.timeout;
                     current.SetViewState(NetworkImage.State.Loading);
-                    uwr.SendWebRequest();
-                    yield return new WaitUntil(() => timeout < Time.time || uwr.isDone);
+                    yield return uwr.SendWebRequest();
                     if (uwr.isDone)
                     {
                         if (current != null)

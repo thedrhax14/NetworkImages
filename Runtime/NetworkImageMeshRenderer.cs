@@ -17,11 +17,18 @@ namespace com.outrealxr.networkimages
 
         public override void SetTexture(Texture texture)
         {
-            Destroy(target.materials[materialIndex].GetTexture(materialPropertyName));
-            target.materials[materialIndex].SetTexture(materialPropertyName, texture);
-            target.materials[materialIndex].mainTextureScale = tiling;
-            target.materials[materialIndex].mainTextureOffset = offset;
-            base.SetTexture(texture);
+            if (target)
+            {
+                Destroy(target.materials[materialIndex].GetTexture(materialPropertyName));
+                target.materials[materialIndex].SetTexture(materialPropertyName, texture);
+                target.materials[materialIndex].mainTextureScale = tiling;
+                target.materials[materialIndex].mainTextureOffset = offset;
+                base.SetTexture(texture);
+            }
+            else
+            {
+                Debug.LogError($"[NetworkImageMeshRenderer] {gameObject.name} has no target assigned");
+            }
         }
 
         public virtual Material GetMaterial()

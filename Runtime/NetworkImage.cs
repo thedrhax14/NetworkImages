@@ -21,7 +21,7 @@ namespace com.outrealxr.networkimages
         public GameObject loading;
         [Tooltip("Activated when error happened while loading")]
         public GameObject error;
-        public float timeout = 5;
+        public int timeout = 5;
 
         public virtual void SetAndEnqueue(string url)
         {

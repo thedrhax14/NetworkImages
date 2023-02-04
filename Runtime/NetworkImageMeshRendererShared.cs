@@ -8,10 +8,17 @@ namespace com.outrealxr.networkimages
         {
             if (target)
             {
-                Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
-                target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
-                target.sharedMaterials[materialIndex].mainTextureScale = tiling;
-                target.sharedMaterials[materialIndex].mainTextureOffset = offset;
+                if (materialIndex < target.materials.Length)
+                {
+                    Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
+                    target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
+                    target.sharedMaterials[materialIndex].mainTextureScale = tiling;
+                    target.sharedMaterials[materialIndex].mainTextureOffset = offset;
+                }
+                else
+                {
+                    Debug.LogError($"[NetworkImageMeshRendererShared] {gameObject.name} less materials then requested index number. It has {target.materials.Length} materials, but tried {materialIndex}");
+                }
                 base.SetTexture(texture);
             }
             else

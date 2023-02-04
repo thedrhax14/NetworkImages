@@ -19,10 +19,17 @@ namespace com.outrealxr.networkimages
         {
             if (target)
             {
-                Destroy(target.materials[materialIndex].GetTexture(materialPropertyName));
-                target.materials[materialIndex].SetTexture(materialPropertyName, texture);
-                target.materials[materialIndex].mainTextureScale = tiling;
-                target.materials[materialIndex].mainTextureOffset = offset;
+                if (materialIndex < target.materials.Length)
+                {
+                    Destroy(target.materials[materialIndex].GetTexture(materialPropertyName));
+                    target.materials[materialIndex].SetTexture(materialPropertyName, texture);
+                    target.materials[materialIndex].mainTextureScale = tiling;
+                    target.materials[materialIndex].mainTextureOffset = offset;
+                }
+                else
+                {
+                    Debug.LogError($"[NetworkImageMeshRenderer] {gameObject.name} less materials then requested index number. It has {target.materials.Length} materials, but tried {materialIndex}");
+                }
                 base.SetTexture(texture);
             }
             else

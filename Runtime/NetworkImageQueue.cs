@@ -23,7 +23,7 @@ namespace com.outrealxr.networkimages
 
         private void Update()
         {
-            if (current != null && uwr != null) text.text = $"Loading (isDone: {uwr.isDone} - {timeout - Time.time:00.00}) {current}";
+            if (current != null && uwr != null) text.text = "Loading (isDone: " + uwr.isDone + " - " + (timeout - Time.time).ToString("00.00") + ") " + current;
             else text.gameObject.SetActive(false);
         }
 

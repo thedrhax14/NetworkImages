@@ -1,6 +1,6 @@
 {
   "name": "com.outrealxr.networkimages",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "displayName": "Network Images",
   "description": "Have you tired in implementing your own memory friendly network images manager to load textures from internet? Say no more, use this package. It uses queue data structure to optimimally utilize CPU time and auto disposes allocated resources.",
   "unity": "2021.3",

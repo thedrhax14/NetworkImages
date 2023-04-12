@@ -26,6 +26,11 @@ namespace com.outrealxr.networkimages
         public virtual void SetAndEnqueue(string url)
         {
             this.url = url;
+            Enqueue();
+        }
+
+        public virtual void Enqueue()
+        {
             SetViewState(State.Queued);
             NetworkImageQueue.instance.Enqueue(this);
         }

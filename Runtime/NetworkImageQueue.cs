@@ -14,6 +14,9 @@ namespace com.outrealxr.networkimages
         Queue<NetworkImage> queue = new Queue<NetworkImage>();
         NetworkImage current;
 
+        UnityWebRequest uwr;
+        float timeout = 0;
+
         public static NetworkImageQueue instance;
 
         private void Awake()
@@ -62,9 +65,6 @@ namespace com.outrealxr.networkimages
             }
         }
 
-        UnityWebRequest uwr;
-        float timeout = 0;
-
         IEnumerator GetTexture()
         {
             if(current == null)
@@ -82,6 +82,7 @@ namespace com.outrealxr.networkimages
             }
             timeout = Time.time + current.timeout;
             text.gameObject.SetActive(true);
+            uwr = null;
             if (current.url.StartsWith("http"))
             {
                 Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
@@ -130,6 +131,7 @@ namespace com.outrealxr.networkimages
                 {
                     Debug.Log($"[NetworkImageQueue] {current.url} is missing.");
                 }
+                TryNext();
             }
         }
     }

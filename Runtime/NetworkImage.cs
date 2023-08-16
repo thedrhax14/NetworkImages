@@ -25,7 +25,7 @@ namespace com.outrealxr.networkimages
 
         public virtual void SetAndEnqueue(string url)
         {
-            this.url = url;
+            this.url = System.Text.RegularExpressions.Regex.Replace(url, @"(mp4|m3u8)$", "jpg");
             Enqueue();
         }
 
@@ -65,5 +65,7 @@ namespace com.outrealxr.networkimages
         {
             return gameObject.name + " (" + url + ")";
         }
+
+        public abstract void ClearTexture();
     }
 }

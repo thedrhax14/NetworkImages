@@ -19,17 +19,22 @@ namespace com.outrealxr.networkimages
         {
             if (target)
             {
-                if (target.sprite != null)
-                {
-                    Destroy(target.sprite.texture);
-                    Destroy(target.sprite);
-                }
+                ClearTexture();
                 target.sprite = Sprite.Create(texture as Texture2D, new Rect(rect.x, rect.y, texture.width, texture.height), pivot, pixelsPerUnit);
                 base.SetTexture(texture);
             }
             else
             {
                 Debug.LogError($"[NetworkImageUIImage] {gameObject.name} has no target assigned");
+            }
+        }
+
+        public override void ClearTexture()
+        {
+            if (target.sprite != null)
+            {
+                Destroy(target.sprite.texture);
+                Destroy(target.sprite);
             }
         }
     }

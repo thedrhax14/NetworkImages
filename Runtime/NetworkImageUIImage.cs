@@ -19,9 +19,10 @@ namespace com.outrealxr.networkimages
         {
             if (target)
             {
-                ClearTexture();
+                if(loaded) ClearTexture();
                 target.sprite = Sprite.Create(texture as Texture2D, new Rect(rect.x, rect.y, texture.width, texture.height), pivot, pixelsPerUnit);
                 base.SetTexture(texture);
+                loaded = true;
             }
             else
             {

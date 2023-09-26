@@ -21,10 +21,11 @@ namespace com.outrealxr.networkimages
             {
                 if (materialIndex < target.materials.Length)
                 {
-                    ClearTexture();
+                    if(loaded) ClearTexture();
                     target.materials[materialIndex].SetTexture(materialPropertyName, texture);
                     target.materials[materialIndex].mainTextureScale = tiling;
                     target.materials[materialIndex].mainTextureOffset = offset;
+                    loaded = true;
                 }
                 else
                 {

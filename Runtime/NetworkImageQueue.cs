@@ -35,7 +35,7 @@ namespace com.outrealxr.networkimages
             if (string.IsNullOrWhiteSpace(networkImage.url))
             {
                 Debug.LogWarning($"[NetworkImageQueue] networkImage {networkImage.gameObject.name} skipped because url is empty. Clearing texture...");
-                current.SetTexture(null);
+                networkImage.SetTexture(null);
                 return;
             }
             if (!networkImage.url.StartsWith("https"))

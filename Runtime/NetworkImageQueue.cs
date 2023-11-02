@@ -34,7 +34,18 @@ namespace com.outrealxr.networkimages
         {
             if (string.IsNullOrWhiteSpace(networkImage.url))
             {
-                Debug.LogWarning($"[NetworkImageQueue] networkImage {networkImage.gameObject.name} skipped because url is empty");
+                Debug.LogWarning($"[NetworkImageQueue] networkImage {networkImage.gameObject.name} skipped because url is empty. Clearing texture...");
+                current.SetTexture(null);
+                return;
+            }
+            if (!networkImage.url.StartsWith("https"))
+            {
+                Debug.LogError($"[NetworkImageQueue] current image is not hosted properly online: {networkImage}");
+                return;
+            }
+            if (!networkImage.url.EndsWith("jpg") && !networkImage.url.EndsWith("jpeg") && !networkImage.url.EndsWith("png"))
+            {
+                Debug.LogError($"[NetworkImageQueue] current image format is not supported: {networkImage}");
                 return;
             }
             Debug.Log($"[NetworkImageQueue] Queued ${networkImage}");
@@ -83,53 +94,31 @@ namespace com.outrealxr.networkimages
             timeout = Time.time + current.timeout;
             text.gameObject.SetActive(true);
             uwr = null;
-            if (current.url.StartsWith("http"))
+            Debug.Log($"[NetworkImageQueue] Dequeued ${current} as valid web image");
+            using (uwr = UnityWebRequestTexture.GetTexture(current.url))
             {
-                Debug.Log($"[NetworkImageQueue] Dequeued ${current} as web image");
-                using (uwr = UnityWebRequestTexture.GetTexture(current.url))
+                uwr.timeout = current.timeout;
+                current.SetViewState(NetworkImage.State.Loading);
+                yield return uwr.SendWebRequest();
+                if (uwr.isDone)
                 {
-                    uwr.timeout = current.timeout;
-                    current.SetViewState(NetworkImage.State.Loading);
-                    yield return uwr.SendWebRequest();
-                    if (uwr.isDone)
+                    if (current != null)
                     {
-                        if (current != null)
+                        if (uwr.result != UnityWebRequest.Result.Success)
                         {
-                            if (uwr.result != UnityWebRequest.Result.Success)
-                            {
-                                current.SetViewState(NetworkImage.State.Error);
-                                Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
-                            }
-                            else
-                            {
-                                current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
-                            }
-                            current = null;
+                            current.SetViewState(NetworkImage.State.Error);
+                            Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
                         }
+                        else
+                        {
+                            current.SetTexture(DownloadHandlerTexture.GetContent(uwr));
+                        }
+                        current = null;
                     }
-                    else if(timeout < Time.time)
-                    {
-                        Debug.LogError($"[NetworkImageQueue] Timed out after {current.timeout} while downloading {current}");
-                    }
-                    TryNext();
                 }
-            }
-            else
-            {
-                Debug.Log($"[NetworkImageQueue] Dequeued ${current} as addressable image");
-                AsyncOperationHandle<IList<IResourceLocation>> locationsHandle = Addressables.LoadResourceLocationsAsync(current.url);
-                yield return locationsHandle;
-                AsyncOperationHandle<Texture2D> handle;
-                if (locationsHandle.Result.Count > 0)
+                else if (timeout < Time.time)
                 {
-                    handle = Addressables.LoadAssetAsync<Texture2D>(current.url);
-                    yield return handle;
-                    Debug.Log($"[AddressableAvatarOperation] Loaded {current.url}");
-                    current.SetTexture(handle.Result);
-                }
-                else
-                {
-                    Debug.Log($"[NetworkImageQueue] {current.url} is missing.");
+                    Debug.LogError($"[NetworkImageQueue] Timed out after {current.timeout} while downloading {current}");
                 }
                 TryNext();
             }

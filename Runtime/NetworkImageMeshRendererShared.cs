@@ -8,9 +8,9 @@ namespace com.outrealxr.networkimages
         {
             if (target)
             {
-                if (materialIndex < target.materials.Length)
+                if (materialIndex < target.sharedMaterials.Length)
                 {
-                    if (loaded) Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
+                    if (loaded) ClearTexture();
                     target.sharedMaterials[materialIndex].SetTexture(materialPropertyName, texture);
                     target.sharedMaterials[materialIndex].mainTextureScale = tiling;
                     target.sharedMaterials[materialIndex].mainTextureOffset = offset;
@@ -28,9 +28,16 @@ namespace com.outrealxr.networkimages
             }
         }
 
-        public override Material GetMaterial()
+        public override void ClearTexture()
         {
-            return target.sharedMaterials[materialIndex];
+            if (materialIndex < target.sharedMaterials.Length)
+            {
+                Destroy(target.sharedMaterials[materialIndex].GetTexture(materialPropertyName));
+            }
+            else
+            {
+                Debug.LogError($"[NetworkImageMeshRendererShared] {gameObject.name} less materials then requested index number. It has {target.sharedMaterials.Length} materials, but tried {materialIndex}");
+            }
         }
     }
 }

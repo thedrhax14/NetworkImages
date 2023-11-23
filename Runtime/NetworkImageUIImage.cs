@@ -7,7 +7,7 @@ namespace com.outrealxr.networkimages
         [Header("UIImage Settings")]
         public UnityEngine.UI.Image target;
         public Vector2 rect = Vector2.zero;
-        public Vector2 pivot = new Vector2(0.5f, 0.5f);
+        public Vector2 pivot = new(0.5f, 0.5f);
         public float pixelsPerUnit = 100f;
 
         private void Awake()

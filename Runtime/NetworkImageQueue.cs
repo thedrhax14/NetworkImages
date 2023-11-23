@@ -43,7 +43,7 @@ namespace com.outrealxr.networkimages
                 Debug.LogError($"[NetworkImageQueue] current image is not hosted properly online: {networkImage}");
                 return;
             }
-            if (!networkImage.url.EndsWith("jpg") && !networkImage.url.EndsWith("jpeg") && !networkImage.url.EndsWith("png"))
+            if (!networkImage.url.ToLower().EndsWith("jpg") && !networkImage.url.ToLower().EndsWith("jpeg") && !networkImage.url.ToLower().EndsWith("png"))
             {
                 Debug.LogError($"[NetworkImageQueue] current image format is not supported: {networkImage}");
                 return;

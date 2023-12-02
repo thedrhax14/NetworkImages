@@ -11,6 +11,7 @@ namespace com.outrealxr.networkimages
     public class NetworkImageQueue : MonoBehaviour
     {
         public TMPro.TextMeshProUGUI text;
+        public bool verboseLogging;
         Queue<NetworkImage> queue = new Queue<NetworkImage>();
         NetworkImage current;
 
@@ -48,7 +49,7 @@ namespace com.outrealxr.networkimages
                 Debug.LogError($"[NetworkImageQueue] current image format is not supported: {networkImage}");
                 return;
             }
-            Debug.Log($"[NetworkImageQueue] Queued ${networkImage}");
+            if (verboseLogging) Debug.Log($"[NetworkImageQueue] Queued ${networkImage}");
             queue.Enqueue(networkImage);
             TryNext();
         }
@@ -62,7 +63,7 @@ namespace com.outrealxr.networkimages
             }
             else if(current != null)
             {
-                Debug.LogWarning($"[NetworkImageQueue] unable to dequeue: there is already an image {current} downloading. Next attempt after that one.");
+                if(verboseLogging) Debug.LogWarning($"[NetworkImageQueue] unable to dequeue: there is already an image {current} downloading. Next attempt after that one.");
             } 
             else if(queue.Count == 0)
             {
@@ -94,7 +95,7 @@ namespace com.outrealxr.networkimages
             timeout = Time.time + current.timeout;
             text.gameObject.SetActive(true);
             uwr = null;
-            Debug.Log($"[NetworkImageQueue] Dequeued ${current} as valid web image");
+            if (verboseLogging) Debug.Log($"[NetworkImageQueue] Dequeued ${current} as valid web image");
             using (uwr = UnityWebRequestTexture.GetTexture(current.url))
             {
                 uwr.timeout = current.timeout;
@@ -107,7 +108,7 @@ namespace com.outrealxr.networkimages
                         if (uwr.result != UnityWebRequest.Result.Success)
                         {
                             current.SetViewState(NetworkImage.State.Error);
-                            Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
+                            if (verboseLogging) Debug.LogError($"[NetworkImageQueue] Error while downloading {current}: {uwr.error}");
                         }
                         else
                         {
@@ -118,7 +119,7 @@ namespace com.outrealxr.networkimages
                 }
                 else if (timeout < Time.time)
                 {
-                    Debug.LogError($"[NetworkImageQueue] Timed out after {current.timeout} while downloading {current}");
+                    if (verboseLogging) Debug.LogError($"[NetworkImageQueue] Timed out after {current.timeout} while downloading {current}");
                 }
                 TryNext();
             }

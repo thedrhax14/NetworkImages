@@ -1,34 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace com.outrealxr.networkimages
 {
     public class NetworkImageQueue : MonoBehaviour
     {
-        public TMPro.TextMeshProUGUI text;
         public bool verboseLogging;
         Queue<NetworkImage> queue = new Queue<NetworkImage>();
         NetworkImage current;
 
         UnityWebRequest uwr;
         float timeout = 0;
+        string lastMsg;
 
         public static NetworkImageQueue instance;
 
-        private void Awake()
+        public List<NetworkImageQueueObserver> observers = new();
+
+        void Awake()
         {
             instance = this;
         }
 
-        private void Update()
+        void Update()
         {
-            if (current != null && uwr != null) text.text = "Loading (isDone: " + uwr.isDone + " - " + (timeout - Time.time).ToString("00.00") + ") " + current;
-            else text.gameObject.SetActive(false);
+            string msg = "Loading (isDone: " + uwr.isDone + " - " + (timeout - Time.time).ToString("00.00") + ") " + current;
+            if (lastMsg.Equals(msg)) return;
+            OnQueueChanged(msg);
+        }
+
+        void OnQueueChanged(string msg)
+        {
+            if (lastMsg.Equals(msg)) return;
+            foreach (var observer in observers) observer.OnNotify(msg);
+            lastMsg = msg;
         }
 
         public void Enqueue(NetworkImage networkImage)
@@ -68,12 +75,12 @@ namespace com.outrealxr.networkimages
             else if(queue.Count == 0)
             {
                 Debug.LogWarning("[NetworkImageQueue] Nothing to dequeue");
-                text.text = "";
+                OnQueueChanged("");
             }
             else
             {
                 Debug.LogWarning("[NetworkImageQueue] Uknown reason");
-                text.text = "";
+                OnQueueChanged("");
             }
         }
 
@@ -93,7 +100,6 @@ namespace com.outrealxr.networkimages
                 yield break;
             }
             timeout = Time.time + current.timeout;
-            text.gameObject.SetActive(true);
             uwr = null;
             if (verboseLogging) Debug.Log($"[NetworkImageQueue] Dequeued ${current} as valid web image");
             using (uwr = UnityWebRequestTexture.GetTexture(current.url))

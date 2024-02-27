@@ -26,7 +26,7 @@ namespace com.outrealxr.networkimages
 
         void Update()
         {
-            string msg = "Loading (isDone: " + uwr.isDone + " - " + (timeout - Time.time).ToString("00.00") + ") " + current;
+            string msg = current != null && uwr != null ? "Loading (isDone: " + uwr.isDone + " - " + (timeout - Time.time).ToString("00.00") + ") " + current : "";
             if (lastMsg.Equals(msg)) return;
             OnQueueChanged(msg);
         }

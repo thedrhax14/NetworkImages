@@ -13,7 +13,7 @@ namespace com.outrealxr.networkimages
 
         UnityWebRequest uwr;
         float timeout = 0;
-        string lastMsg;
+        string lastMsg = "";
 
         public static NetworkImageQueue instance;
 

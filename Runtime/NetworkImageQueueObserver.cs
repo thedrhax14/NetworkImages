@@ -14,7 +14,7 @@ namespace com.outrealxr.networkimages
         public void OnNotify(string msg)
         {
             text.text = msg;
-            text.gameObject.SetActive(!string.IsNullOrWhiteSpace(msg));
+            text.enabled = !string.IsNullOrWhiteSpace(msg);
         }
 
         void OnDisable()
